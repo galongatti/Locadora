@@ -6,7 +6,7 @@ namespace Locadora.Context
 {
 	public class LocadoraApiContext : DbContext
 	{
-        public DbSet<Cliente> Fornecedor { get; set; }
+        public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Filme> Categoria { get; set; }
         public DbSet<Locacao> Lancamento { get; set; }
         public DbSet<LocacoesItens> LocacoesItens { get; set; }
