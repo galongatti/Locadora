@@ -1,4 +1,5 @@
 ﻿using Locadora.Context;
+using Locadora.Interface;
 using Locadora.Logica;
 using Locadora.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,11 @@ namespace Locadora.Controller
 	[ApiController]
 	public class ClienteController : ControllerBase
 	{
-		private readonly LocadoraApiContext _context;
+		private readonly IClienteService _clienteService;
 
-		public ClienteController(LocadoraApiContext context)
+		public ClienteController(IClienteService clienteService)
 		{
-			_context = context;
+			_clienteService = clienteService;
 		}
 
 		[HttpPost]
@@ -26,10 +27,10 @@ namespace Locadora.Controller
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto cliente inválido"); }
 
-				LogicaCliente logica = new LogicaCliente(_context);
-				List<string> erros = logica.ValidarDados(cliente);
+				List<string> erros = _clienteService.ValidarDados(cliente);
+				
 
-				Cliente clienteExistente = await logica.BuscarClientePorDocumento(cliente.Documento);
+				Cliente clienteExistente = await _clienteService.ObterClientePorDocumento(cliente.Documento);
 				if (clienteExistente != null) 
 				{
 					erros.Add("Já existe um cliente com esse documento");
@@ -41,7 +42,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Cliente newCliente = await logica.CadastrarCliente(cliente);
+					Cliente newCliente = await _clienteService.Adicionar(cliente);
 					return Ok(newCliente);
 				}
 			}
@@ -58,8 +59,14 @@ namespace Locadora.Controller
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto cliente inválido"); }
 
-				LogicaCliente logica = new LogicaCliente(_context);
-				List<string> erros = logica.ValidarDados(cliente);
+				List<string> erros = _clienteService.ValidarDados(cliente);
+
+
+				Cliente clienteExistente = await _clienteService.ObterClientePorDocumento(cliente.Documento);
+				if (clienteExistente == null)
+				{
+					erros.Add("Já existe um cliente com esse documento");
+				}
 
 				if (erros.Count > 0)
 				{
@@ -67,17 +74,8 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Cliente clienteExiste = await logica.BuscarClientePorDocumento(cliente.Documento);
-					if(clienteExiste != null)
-					{
-						Cliente newCliente = await logica.AtualizarCliente(cliente);
-						return Ok(newCliente);
-					} 
-					else
-					{
-						return BadRequest("Cliente não localizado");
-					}
-					
+					Cliente newCliente = await _clienteService.Adicionar(cliente);
+					return Ok(newCliente);
 				}
 			}
 			catch (Exception)
@@ -91,8 +89,8 @@ namespace Locadora.Controller
 		{
 			try
 			{
-				LogicaCliente logica = new LogicaCliente(_context);
-				return await logica.BuscarTodosClientes();
+				
+				return await _clienteService.ObterTodos();
 			}
 			catch (Exception)
 			{
@@ -106,8 +104,8 @@ namespace Locadora.Controller
 		{
 			try
 			{
-				LogicaCliente logica = new LogicaCliente(_context);
-				return await logica.BuscarClientePorDocumento(documento);
+				Cliente cliente = await _clienteService.ObterClientePorDocumento(documento);
+				return cliente;
 			}
 			catch (Exception)
 			{
@@ -121,8 +119,7 @@ namespace Locadora.Controller
 		{
 			try
 			{
-				LogicaCliente logica = new LogicaCliente(_context);
-				return await logica.BuscarClienteId(id);
+				return await _clienteService.ObterPorId(id);
 			}
 			catch (Exception)
 			{

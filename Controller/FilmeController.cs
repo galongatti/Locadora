@@ -1,4 +1,5 @@
 ﻿using Locadora.Context;
+using Locadora.Interface;
 using Locadora.Logica;
 using Locadora.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -12,22 +13,21 @@ namespace Locadora.Controller
 	[ApiController]
 	public class FilmeController : ControllerBase
 	{
-		private readonly LocadoraApiContext _context;
+		private readonly IFilmeService _filmeService;
 
-		public FilmeController(LocadoraApiContext context)
+		public FilmeController(IFilmeService filmeService)
 		{
-			_context = context;
+			_filmeService = filmeService;
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<Filme>> CadastrarFilme(Filme Filme)
+		public async Task<ActionResult<Filme>> CadastrarFilme(Filme filme)
 		{
 			try
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto filme inválido"); }
 
-				LogicaFilme logica = new LogicaFilme(_context);
-				List<string> erros = logica.ValidarDados(Filme);
+				List<string> erros = _filmeService.ValidarDados(filme);
 
 				if(erros.Count > 0)
 				{
@@ -35,7 +35,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Filme newFilme = await logica.CadastrarFilme(Filme);
+					Filme newFilme = await _filmeService.Adicionar(filme);
 					return Ok(newFilme);
 				}
 			}
@@ -52,8 +52,7 @@ namespace Locadora.Controller
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto filme inválido"); }
 
-				LogicaFilme logica = new LogicaFilme(_context);
-				List<string> erros = logica.ValidarDados(filme);
+				List<string> erros = _filmeService.ValidarDados(filme);
 
 				if (erros.Count > 0)
 				{
@@ -61,17 +60,15 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Filme FilmeExiste = await logica.BuscarFilmeId(filme.Id);
-					if(FilmeExiste != null)
-					{
-						Filme newFilme = await logica.AtualizarFilme(filme);
-						return Ok(newFilme);
-					} 
-					else
-					{
+					Filme FilmeExiste = await _filmeService.ObterPorId(filme.Id);
+
+					if(FilmeExiste == null)
 						return BadRequest("Filme não localizado");
-					}
 					
+
+					Filme newFilme = await _filmeService.Atualizar(filme);
+					return Ok(newFilme);
+
 				}
 			}
 			catch (Exception)
@@ -85,8 +82,7 @@ namespace Locadora.Controller
 		{
 			try
 			{
-				LogicaFilme logica = new LogicaFilme(_context);
-				return await logica.BuscarTodosFilmes();
+				return await _filmeService.ObterTodos();
 			}
 			catch (Exception)
 			{
@@ -100,8 +96,7 @@ namespace Locadora.Controller
 		{
 			try
 			{
-				LogicaFilme logica = new LogicaFilme(_context);
-				return await logica.BuscarFilmeId(id);
+				return await _filmeService.ObterPorId(id);
 			}
 			catch (Exception)
 			{

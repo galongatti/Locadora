@@ -1,4 +1,8 @@
 using Locadora.Context;
+using Locadora.Interface;
+using Locadora.Logica;
+using Locadora.Repository;
+using Locadora.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,6 +41,17 @@ namespace Locadora
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Locadora", Version = "v1" });
 			});
+
+			services.AddScoped<LocadoraApiContext>();
+
+			services.AddScoped<IClienteRepository, ClienteRepository>();
+			services.AddScoped<IClienteService, ClienteService>();
+
+			services.AddScoped<IFilmeRepository, FilmeRepository>();
+			services.AddScoped<IFilmeService, FilmeService>();
+
+			services.AddScoped<ILocacaoRepository, LocacaoRepository>();
+			services.AddScoped<ILocacaoService, LocacaoService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

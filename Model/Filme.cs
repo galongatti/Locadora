@@ -2,9 +2,8 @@
 
 namespace Locadora.Model
 {
-	public class Filme
+	public class Filme : Entity
 	{
-		public int Id { get; set; }
 		public string Nome { get; set; }
 		public bool Ativo { get; set; }
 		public bool Disponivel { get; set; }
