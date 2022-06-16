@@ -29,6 +29,12 @@ namespace Locadora.Controller
 				LogicaCliente logica = new LogicaCliente(_context);
 				List<string> erros = logica.ValidarDados(cliente);
 
+				Cliente clienteExistente = await logica.BuscarClientePorDocumento(cliente.Documento);
+				if (clienteExistente != null) 
+				{
+					erros.Add("Já existe um cliente com esse documento");
+				}
+
 				if(erros.Count > 0)
 				{
 					return BadRequest(erros);
