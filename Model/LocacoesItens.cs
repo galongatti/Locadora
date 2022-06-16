@@ -1,8 +1,7 @@
 ﻿namespace Locadora.Model
 {
-	public class LocacoesItens
+	public class LocacoesItens : Entity
 	{
-		public int Id { get; set; }
 		public Filme Filme { get; set; }
 		public Locacao Locacao { get; set; }
 	}
