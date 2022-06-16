@@ -11,9 +11,9 @@ namespace Locadora.Controller
 	[ApiController]
 	public class LocacoesController : ControllerBase
 	{
-		private readonly ILocacoesService _locacaoService;
+		private readonly ILocacaoService _locacaoService;
 
-		public LocacoesController(ILocacoesService locacaoService)
+		public LocacoesController(ILocacaoService locacaoService)
 		{
 			_locacaoService = locacaoService;
 		}

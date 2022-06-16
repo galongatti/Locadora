@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Locadora.Interface
 {
-	public interface ILocacoesRepository : IRepository<Locacao>
+	public interface ILocacaoRepository : IRepository<Locacao>
 	{
 		Task<List<Locacao>> ObterPorDocumentoCliente(string documento);
 	}

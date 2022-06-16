@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Locadora.Repository
 {
-	public class LocacaoRepository : Repository<Locacao>, ILocacoesRepository
+	public class LocacaoRepository : Repository<Locacao>, ILocacaoRepository
 	{
 		public LocacaoRepository(LocadoraApiContext context) : base(context) { }
 

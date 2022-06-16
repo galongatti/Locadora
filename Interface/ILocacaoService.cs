@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Locadora.Interface
 {
-	public interface ILocacoesService : IService<Locacao>
+	public interface ILocacaoService : IService<Locacao>
 	{
 		Task<List<Locacao>> ObterPorDocumentoCliente(string documento);
 		Task<Locacao> DarBaixa(int id);

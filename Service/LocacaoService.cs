@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Locadora.Service
 {
-	public class LocacoesService : ILocacoesService
+	public class LocacaoService : ILocacaoService
 	{
-		private readonly ILocacoesRepository _locacoesRepository;
+		private readonly ILocacaoRepository _locacoesRepository;
 		private readonly IClienteService _clienteService;
 
-		public LocacoesService(ILocacoesRepository locacoesRepository, IClienteService clienteService)
+		public LocacaoService(ILocacaoRepository locacoesRepository, IClienteService clienteService)
 		{
 			_locacoesRepository = locacoesRepository;
 			_clienteService = clienteService;
