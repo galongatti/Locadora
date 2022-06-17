@@ -20,8 +20,11 @@ namespace Locadora.Controller
 			_clienteService = clienteService;
 		}
 
+		/// <summary>
+		/// Cadastra um cliente
+		/// </summary>
 		[HttpPost]
-		public async Task<ActionResult<Cliente>> CadastrarCliente(Cliente cliente)
+		public ActionResult<Cliente> CadastrarCliente(Cliente cliente)
 		{
 			try
 			{
@@ -30,7 +33,7 @@ namespace Locadora.Controller
 				List<string> erros = _clienteService.ValidarDados(cliente);
 				
 
-				Cliente clienteExistente = await _clienteService.ObterClientePorDocumento(cliente.Documento);
+				Cliente clienteExistente = _clienteService.ObterClientePorDocumento(cliente.Documento);
 
 				if (clienteExistente != null) 
 				{
@@ -43,7 +46,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Cliente newCliente = await _clienteService.Adicionar(cliente);
+					Cliente newCliente = _clienteService.Adicionar(cliente);
 					return Ok(newCliente);
 				}
 			}
@@ -53,8 +56,11 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Atualiza os dados do cliente
+		/// </summary>
 		[HttpPut]
-		public async Task<ActionResult<Cliente>> AtualizarCliente(Cliente cliente)
+		public ActionResult<Cliente> AtualizarCliente(Cliente cliente)
 		{
 			try
 			{
@@ -63,7 +69,7 @@ namespace Locadora.Controller
 				List<string> erros = _clienteService.ValidarDados(cliente);
 
 
-				Cliente clienteExistente = await _clienteService.ObterClientePorDocumento(cliente.Documento);
+				Cliente clienteExistente = _clienteService.ObterClientePorDocumento(cliente.Documento);
 
 				if (clienteExistente == null)
 				{
@@ -76,7 +82,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Cliente newCliente = await _clienteService.Atualizar(cliente);
+					Cliente newCliente = _clienteService.Atualizar(cliente);
 					return Ok(newCliente);
 				}
 			}
@@ -86,12 +92,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca todos os clientes ativos
+		/// </summary>
 		[HttpGet("BuscarTodosClientes")]
-		public async Task<ActionResult<List<Cliente>>> BuscarTodosClientes()
+		public ActionResult<List<Cliente>> BuscarTodosClientes()
 		{
 			try
 			{
-				return await _clienteService.ObterTodos();
+				return _clienteService.ObterTodos();
 			}
 			catch (Exception)
 			{
@@ -99,12 +108,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca todos os clientes inativos
+		/// </summary>
 		[HttpGet("BuscarTodosClientesInativos")]
-		public async Task<ActionResult<List<Cliente>>> BuscarTodosClientesInativos()
+		public ActionResult<List<Cliente>> BuscarTodosClientesInativos()
 		{
 			try
 			{
-				return await _clienteService.ObterTodosInativos();
+				return _clienteService.ObterTodosInativos();
 			}
 			catch (Exception)
 			{
@@ -112,12 +124,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca um cliente de acordo com seu documento
+		/// </summary>
 		[HttpGet("BuscarByDoc/{documento}")]
-		public async Task<ActionResult<Cliente>> BuscarClientePorDocumento(string documento)
+		public ActionResult<Cliente> BuscarClientePorDocumento(string documento)
 		{
 			try
 			{
-				Cliente cliente = await _clienteService.ObterClientePorDocumento(documento);
+				Cliente cliente = _clienteService.ObterClientePorDocumento(documento);
 				return cliente;
 			}
 			catch (Exception)
@@ -127,12 +142,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca um cliente de acordo com seu id
+		/// </summary>
 		[HttpGet("BuscarById/{id:int}")]
-		public async Task<ActionResult<Cliente>> BuscarClientePorId(int id)
+		public ActionResult<Cliente> BuscarClientePorId(int id)
 		{
 			try
 			{
-				return await _clienteService.ObterPorId(id);
+				return _clienteService.ObterPorId(id);
 			}
 			catch (Exception)
 			{

@@ -21,8 +21,11 @@ namespace Locadora.Controller
 			_filmeService = filmeService;
 		}
 
+		/// <summary>
+		/// Cadastra um filme
+		/// </summary>
 		[HttpPost]
-		public async Task<ActionResult<Filme>> CadastrarFilme(Filme filme)
+		public ActionResult<Filme> CadastrarFilme(Filme filme)
 		{
 			try
 			{
@@ -36,7 +39,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Filme newFilme = await _filmeService.Adicionar(filme);
+					Filme newFilme = _filmeService.Adicionar(filme);
 					return Ok(newFilme);
 				}
 			}
@@ -46,14 +49,17 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Atualiza o registro do filme
+		/// </summary>
 		[HttpPut]
-		public async Task<ActionResult<Filme>> AtualizarFilme(Filme filme)
+		public ActionResult<Filme> AtualizarFilme(Filme filme)
 		{
 			try
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto filme inválido"); }
 
-				List<string> erros = _filmeService.ValidarDados(filme);
+				List<string> erros =  _filmeService.ValidarDados(filme);
 
 				if (erros.Count > 0)
 				{
@@ -61,7 +67,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Filme newFilme = await _filmeService.Atualizar(filme);
+					Filme newFilme =  _filmeService.Atualizar(filme);
 					return Ok(newFilme);
 
 				}
@@ -72,12 +78,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca todos os filmes ativos
+		/// </summary>
 		[HttpGet("BuscarTodosFilmes")]
-		public async Task<ActionResult<List<Filme>>> BuscarTodosFilmes()
+		public ActionResult<List<Filme>> BuscarTodosFilmes()
 		{
 			try
 			{
-				return await _filmeService.ObterTodos();
+				return  _filmeService.ObterTodos();
 			}
 			catch (Exception)
 			{
@@ -86,12 +95,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca todos os filmes inativos
+		/// </summary>
 		[HttpGet("BuscarTodosFilmesInativos")]
-		public async Task<ActionResult<List<Filme>>> BuscarTodosFilmesInativos()
+		public ActionResult<List<Filme>> BuscarTodosFilmesInativos()
 		{
 			try
 			{
-				return await _filmeService.BuscarTodosInativos();
+				return  _filmeService.BuscarTodosInativos();
 			}
 			catch (Exception)
 			{
@@ -100,12 +112,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca um filme de acordo com o id
+		/// </summary>
 		[HttpGet("BuscarById/{id:int}")]
-		public async Task<ActionResult<Filme>> BuscarFilmePorId(int id)
+		public ActionResult<Filme> BuscarFilmePorId(int id)
 		{
 			try
 			{
-				return await _filmeService.ObterPorId(id);
+				return  _filmeService.ObterPorId(id);
 			}
 			catch (Exception)
 			{
@@ -113,7 +128,6 @@ namespace Locadora.Controller
 				return BadRequest("Erro ao buscar Filmes");
 			}
 		}
-
 
 	}
 }

@@ -16,7 +16,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -36,7 +38,7 @@ namespace Locadora
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<LocadoraApiContext>(opt => {
-				opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+				opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging(true);
 			});
 
 			
@@ -53,6 +55,8 @@ namespace Locadora
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Locadora", Version = "v1" });
+				var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 			});
 
 			services.AddTransient<LocadoraApiContext>();

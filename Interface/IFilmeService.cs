@@ -6,6 +6,7 @@ namespace Locadora.Interface
 {
 	public interface IFilmeService : IService<Filme>
 	{
-		Task<List<Filme>> BuscarTodosInativos();
+		List<Filme> BuscarTodosInativos();
+		void AlterarDisponibidade(int id);
 	}
 }

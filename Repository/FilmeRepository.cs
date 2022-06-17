@@ -12,19 +12,19 @@ namespace Locadora.Repository
 	{
 		public FilmeRepository(LocadoraApiContext context) : base(context) { }
 
-		public async Task<List<Filme>> BuscarTodosInativos()
+		public  List<Filme> BuscarTodosInativos()
 		{
-			List<Filme> filmes = await(from c in Db.Filme.AsNoTracking()
+			List<Filme> filmes = (from c in Db.Filme.AsNoTracking()
 										where c.Ativo == false 
-										select c).ToListAsync();
+										select c).ToList();
 			return filmes;
 		}
 
-		public override async Task<List<Filme>> ObterTodos()
+		public override List<Filme> ObterTodos()
 		{
-			List<Filme> filmes = await (from c in Db.Filme.AsNoTracking()
+			List<Filme> filmes =  (from c in Db.Filme.AsNoTracking()
 										   where c.Ativo == true
-										   select c).ToListAsync();
+										   select c).ToList();
 			return filmes;
 		}
 	}

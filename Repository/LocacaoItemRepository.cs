@@ -12,27 +12,27 @@ namespace Locadora.Repository
 	{
 		public LocacaoItemRepository(LocadoraApiContext context) : base(context) { }
 
-		public async Task<List<LocacaoItem>> BuscarPorIdLocacao(int id)
+		public List<LocacaoItem> BuscarPorIdLocacao(int id)
 		{
-			List<LocacaoItem> locacoes = await (from item in Db.LocacoesItens.AsNoTracking()
+			List<LocacaoItem> locacoes = (from item in Db.LocacoesItens.AsNoTracking()
 											join filme in Db.Filme.AsNoTracking()
 											on item.IDFilme equals filme.Id
-											where item.IDLocacao == id
+											where item.IDLocacao == id && item.Ativo == true
 											select new LocacaoItem
 											{ 
 												Filme = filme,
 												Id = item.Id,
 												IDFilme = item.IDFilme,
 												IDLocacao = item.IDLocacao,
-											}).ToListAsync();
+											}).ToList();
 
 			return locacoes;
 		}
 
-		public override async Task<LocacaoItem> ObterPorId(int id) 
+		public override LocacaoItem ObterPorId(int id) 
 		{
 
-			LocacaoItem locacoes = await (from item in Db.LocacoesItens.AsNoTracking()
+			LocacaoItem locacoes = (from item in Db.LocacoesItens.AsNoTracking()
 												join filme in Db.Filme.AsNoTracking()
 												on item.IDFilme equals filme.Id
 												where item.Id == id
@@ -42,15 +42,15 @@ namespace Locadora.Repository
 													Id = item.Id,
 													IDFilme = item.IDFilme,
 													IDLocacao = item.IDLocacao,
-												}).FirstOrDefaultAsync();
+												}).FirstOrDefault();
 
 			return locacoes;
 
 		}
 
-		public override async Task<List<LocacaoItem>> ObterTodos()
+		public override List<LocacaoItem> ObterTodos()
 		{
-			List<LocacaoItem> locacoesItens = await (from item in Db.LocacoesItens.AsNoTracking()
+			List<LocacaoItem> locacoesItens = (from item in Db.LocacoesItens.AsNoTracking()
 												join filme in Db.Filme.AsNoTracking()
 												on item.IDFilme equals filme.Id
 												select new LocacaoItem
@@ -59,7 +59,7 @@ namespace Locadora.Repository
 													Id = item.Id,
 													IDFilme = item.IDFilme,
 													IDLocacao = item.IDLocacao,
-												}).ToListAsync();
+												}).ToList();
 
 			return locacoesItens;
 		}

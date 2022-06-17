@@ -6,10 +6,10 @@ namespace Locadora.Interface
 {
 	public interface IService<TEntity> where TEntity : Entity
 	{
-		Task<TEntity> Adicionar(TEntity entity);
-		Task<TEntity> Atualizar(TEntity entity);
-		Task<TEntity> ObterPorId(int id);
-		Task<List<TEntity>> ObterTodos();
+		TEntity Adicionar(TEntity entity);
+		TEntity Atualizar(TEntity entity);
+		TEntity ObterPorId(int id);
+		List<TEntity> ObterTodos();
 		List<string> ValidarDados(TEntity entity);
 	}
 }

@@ -13,25 +13,25 @@ namespace Locadora.Repository
 		public ClienteRepository(LocadoraApiContext context) : base(context) { }
 
 
-	    public async Task<Cliente> ObterClientePorDocumento(string documento)
+	    public Cliente ObterClientePorDocumento(string documento)
 		{
-			Cliente cliente = await Db.Cliente.AsNoTracking().FirstOrDefaultAsync(x => x.Documento.Equals(documento));
+			Cliente cliente = Db.Cliente.AsNoTracking().FirstOrDefault(x => x.Documento.Equals(documento));
 			return cliente;
 		}
 
-		public override async Task<List<Cliente>> ObterTodos()
+		public override List<Cliente> ObterTodos()
 		{
-			List<Cliente> cliente = await (from c in Db.Cliente.AsNoTracking()
+			List<Cliente> cliente = (from c in Db.Cliente.AsNoTracking()
 									 where c.Ativo == true
-									 select c).ToListAsync();
+									 select c).ToList();
 			return cliente;
 		}
 
-		public async Task<List<Cliente>> ObterTodosInativos()
+		public List<Cliente> ObterTodosInativos()
 		{
-			List<Cliente> cliente = await(from c in Db.Cliente.AsNoTracking()
+			List<Cliente> cliente = (from c in Db.Cliente.AsNoTracking()
 										  where c.Ativo == false
-										  select c).ToListAsync();
+										  select c).ToList();
 			return cliente;
 		}
 	}
