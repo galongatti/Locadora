@@ -6,7 +6,7 @@ namespace Locadora.Interface
 {
 	public interface IClienteService : IService<Cliente>
 	{
-		public Task<Cliente> ObterClientePorDocumento(string documento);
-		public Task<List<Cliente>> ObterTodosInativos();
+		public Cliente ObterClientePorDocumento(string documento);
+		public List<Cliente> ObterTodosInativos();
 	}
 }

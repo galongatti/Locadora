@@ -16,48 +16,66 @@ namespace Locadora.Service
 			_filmeService = filmeService;
 		}
 
-		public async Task<LocacaoItem> Adicionar(LocacaoItem item)
+		public LocacaoItem Adicionar(LocacaoItem item)
 		{
+			Filme filme = _filmeService.ObterPorId(item.IDFilme);
+			filme.Disponivel = false;
+			_filmeService.Atualizar(filme);
 			item.Ativo = true;
-			return await _locacaoItemRepository.Adicionar(item);
+			return _locacaoItemRepository.Adicionar(item);
 		}
 
-		public async Task<LocacaoItem> Atualizar(LocacaoItem item)
+		public LocacaoItem Atualizar(LocacaoItem item)
 		{
-			return await _locacaoItemRepository.Atualizar(item);
+			return _locacaoItemRepository.Atualizar(item);
 		}
 
-		public async Task<List<LocacaoItem>> BuscarPorIdLocacao(int id)
+		public List<LocacaoItem> BuscarPorIdLocacao(int id)
 		{
-			return await _locacaoItemRepository.BuscarPorIdLocacao(id);
+			return _locacaoItemRepository.BuscarPorIdLocacao(id);
 		}
 
-		public void InativarItens(int idLocacao)
+		public bool InativarItens(int idLocacao)
 		{
-			List<LocacaoItem> itens = BuscarPorIdLocacao(idLocacao).Result;
-			itens.ForEach(x =>
+			List<LocacaoItem> itens = BuscarPorIdLocacao(idLocacao);
+			itens.ForEach(x => 
 			{
 				x.Ativo = false;
 				_locacaoItemRepository.Atualizar(x);
-				Filme filme = _filmeService.ObterPorId(x.IDFilme).Result;
-				filme.Disponivel = true;
-				_filmeService.Atualizar(filme);
+				_filmeService.AlterarDisponibidade(x.IDFilme);
+				
 			});
+
+			return true;
 		}
 
-		public async Task<LocacaoItem> ObterPorId(int id)
+		public LocacaoItem ObterPorId(int id)
 		{
-			return await _locacaoItemRepository.ObterPorId(id);
+			return _locacaoItemRepository.ObterPorId(id);
 		}
 
-		public async Task<List<LocacaoItem>> ObterTodos()
+		public List<LocacaoItem> ObterTodos()
 		{
-			return await _locacaoItemRepository.ObterTodos();
+			return _locacaoItemRepository.ObterTodos();
+		}
+
+		public List<string> ValidarAtualizacao(LocacaoItem item)
+		{
+			List<LocacaoItem> list = BuscarPorIdLocacao(item.IDLocacao);
+			if(!list.Exists(x => x.IDFilme == item.IDFilme))
+			{
+				Filme filme = _filmeService.ObterPorId(item.IDFilme);
+				if(!filme.Disponivel)
+					return new List<string>() { $"O filme {filme.Nome} não está disponivel para locação" };
+			}
+
+			return new List<string>() { string.Empty };
+
 		}
 
 		public List<string> ValidarDados(LocacaoItem item)
 		{
-			Filme filme = _filmeService.ObterPorId(item.IDFilme).Result;
+			Filme filme = _filmeService.ObterPorId(item.IDFilme);
 
 			if (filme.Disponivel)
 				return new List<string>() { string.Empty };

@@ -20,18 +20,21 @@ namespace Locadora.Controller
 			_locacaoItemService = locacaoItemService;
 		}
 
+		/// <summary>
+		/// Realiza uma locação
+		/// </summary>
 		[HttpPost]
-		public async Task<ActionResult<Locacao>> CadastrarLocacao(Locacao locacao) 
+		public ActionResult<Locacao> CadastrarLocacao(Locacao locacao) 
 		{
 			try 
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto locação inválido"); }
 
-				List<string> erros = _locacaoService.ValidarDados(locacao);
+				List<string> erros =  _locacaoService.ValidarDados(locacao);
 				List<string> errosItens = new List<string>();
-				locacao.Itens.ForEach(x =>
+				locacao.Itens.ForEach( x =>
 				{
-					List<string> erro = _locacaoItemService.ValidarDados(x);
+					List<string> erro =  _locacaoItemService.ValidarDados(x);
 					if (!string.IsNullOrEmpty(erro[0]))
 						errosItens.AddRange(erro);
 				});
@@ -49,7 +52,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					await _locacaoService.Adicionar(locacao);
+					 _locacaoService.Adicionar(locacao);
 
 				
 					return Ok(locacao);
@@ -62,23 +65,28 @@ namespace Locadora.Controller
 
 		}
 
+		/// <summary>
+		/// Atualiza a locação passada por parametro
+		/// </summary>
 		[HttpPut]
-		public async Task<ActionResult<Locacao>> AtualizarLocacao(Locacao locacao)
+		public ActionResult<Locacao> AtualizarLocacao(Locacao locacao)
 		{
 			try
 			{
 				if (!ModelState.IsValid) { return BadRequest("Objeto locação inválido"); }
 
-				Locacao locacaoExiste = await _locacaoService.ObterPorId(locacao.Id);
+				Locacao locacaoExiste =  _locacaoService.ObterPorId(locacao.Id);
 
 				if (locacaoExiste == null)
 					return BadRequest("Locação não localizada");
 
-				List<string> erros = _locacaoService.ValidarDados(locacao);
+				List<string> erros =  _locacaoService.ValidarDados(locacao);
 				List<string> errosItens = new List<string>();
-				locacao.Itens.ForEach(x =>
+				List<LocacaoItem> itensAux = locacao.Itens;
+
+				itensAux.ForEach( x =>
 				{
-					List<string> erro = _locacaoItemService.ValidarDados(x);
+					List<string> erro =  _locacaoItemService.ValidarAtualizacao(x);
 					if (!string.IsNullOrEmpty(erro[0]))
 						errosItens.AddRange(erro);
 				});
@@ -96,18 +104,10 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					_locacaoItemService.InativarItens(locacao.Id);
+					 _locacaoItemService.InativarItens(locacao.Id);
 
-					Locacao newLocacao = await _locacaoService.Atualizar(locacao);
-					List<LocacaoItem> newItens = new List<LocacaoItem>();
-					locacao.Itens.ForEach(x =>
-					{
-						LocacaoItem item = _locacaoItemService.Adicionar(x).Result;
-						newItens.Add(item);
-					});
-
-					newLocacao.Itens = newItens;
-
+					Locacao newLocacao =  _locacaoService.Atualizar(locacao);
+					
 					return Ok(newLocacao);
 				}
 			}
@@ -118,17 +118,21 @@ namespace Locadora.Controller
 
 		}
 
+
+		/// <summary>
+		/// Faz a baixa da locação
+		/// </summary>
 		[HttpPut("DarBaixa/{id:int}")]
-		public async Task<ActionResult<Locacao>> DarBaixa(int id)
+		public ActionResult<Locacao> DarBaixa(int id)
 		{
 			try
 			{
-				Locacao locacaoExiste = await _locacaoService.ObterPorId(id);
+				Locacao locacaoExiste =  _locacaoService.ObterPorId(id);
 
 				if (locacaoExiste == null)
 					return BadRequest("Locação não localizada");
 
-				return await _locacaoService.DarBaixa(id);
+				return  _locacaoService.DarBaixa(id);
 
 			}
 			catch (Exception)
@@ -137,12 +141,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca todas as locações e entidades relacionadas, como cliente e itens 
+		/// </summary>
 		[HttpGet("BuscarTodasLocacoes")]
-		public async Task<ActionResult<List<Locacao>>> BuscarTodasLocacoes()
+		public ActionResult<List<Locacao>> BuscarTodasLocacoes()
 		{
 			try
 			{
-				return await _locacaoService.ObterTodos();
+				return  _locacaoService.ObterTodos();
 			}
 			catch (Exception ex)
 			{
@@ -151,12 +158,15 @@ namespace Locadora.Controller
 			}
 		}
 
+		/// <summary>
+		/// Busca uma locação de acordo com o id passado, junto com as entidades relacionadas, como cliente e itens 
+		/// </summary>
 		[HttpGet("BuscarById/{id:int}")]
-		public async Task<ActionResult<Locacao>> BuscarLocacaoItemPorId(int id)
+		public ActionResult<Locacao> BuscarLocacaoItemPorId(int id)
 		{
 			try
 			{
-				return await _locacaoService.ObterPorId(id);
+				return  _locacaoService.ObterPorId(id);
 			}
 			catch (Exception)
 			{
@@ -165,12 +175,15 @@ namespace Locadora.Controller
 			}
 		}
 
-		[HttpGet("BuscarByDocumento/{id:int}")]
-		public async Task<ActionResult<List<Locacao>>> BuscarByLocacao(string documento)
+		/// <summary>
+		/// Busca todas locações de um cliente de acordo com seu documento passado, junto com as entidades relacionadas, como cliente e itens 
+		/// </summary>
+		[HttpGet("BuscarByDocumento/{documento}")]
+		public ActionResult<List<Locacao>> BuscarByLocacao(string documento)
 		{
 			try
 			{
-				return await _locacaoService.ObterPorDocumentoCliente(documento);
+				return  _locacaoService.ObterPorDocumentoCliente(documento);
 			}
 			catch (Exception)
 			{

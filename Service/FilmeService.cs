@@ -16,31 +16,38 @@ namespace Locadora.Logica
 			_filmeRepository = filmeRepository;
 		}
 
-		public async Task<Filme> Adicionar(Filme filme)
+		public Filme Adicionar(Filme filme)
 		{
-			await _filmeRepository.Adicionar(filme);
+			 _filmeRepository.Adicionar(filme);
 			return filme;
 		}
 
-		public async Task<Filme> Atualizar(Filme filme)
+		public void AlterarDisponibidade(int id)
 		{
-			await _filmeRepository.Atualizar(filme);
+			Filme filme = ObterPorId(id);
+			filme.Disponivel = !filme.Disponivel;
+			Atualizar(filme);
+		}
+
+		public Filme Atualizar(Filme filme)
+		{
+			 _filmeRepository.Atualizar(filme);
 			return filme;
 		}
 
-		public async Task<List<Filme>> BuscarTodosInativos()
+		public List<Filme> BuscarTodosInativos()
 		{
-			return await _filmeRepository.BuscarTodosInativos();
+			return  _filmeRepository.BuscarTodosInativos();
 		}
 
-		public async Task<Filme> ObterPorId(int id)
+		public Filme ObterPorId(int id)
 		{
-			return await _filmeRepository.ObterPorId(id);
+			return  _filmeRepository.ObterPorId(id);
 		}
 
-		public async Task<List<Filme>> ObterTodos()
+		public List<Filme> ObterTodos()
 		{
-			return await _filmeRepository.ObterTodos();
+			return _filmeRepository.ObterTodos();
 		}
 
 		public List<string> ValidarDados(Filme cliente)

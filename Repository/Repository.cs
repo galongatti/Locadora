@@ -4,6 +4,7 @@ using Locadora.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Locadora.Repository
@@ -20,33 +21,41 @@ namespace Locadora.Repository
 			DbSet = db.Set<TEntity>();
 		}
 
-		public virtual async Task<TEntity> Adicionar(TEntity entity)
+		public virtual TEntity Adicionar(TEntity entity)
 		{
+			entity.DataInclusao = DateTime.Now;
+
 			DbSet.Add(entity);
-			await Salvar();
+			Salvar();
 			return entity;
 		}
 
-		public virtual async Task<TEntity> Atualizar(TEntity entity)
+		public virtual TEntity Atualizar(TEntity entity)
 		{
+		    Db.ChangeTracker.Clear();
+			entity.DataInclusao = DateTime.Now;
+			entity.DataAlteracao = DateTime.Now;
+
 			DbSet.Update(entity);
-			await Salvar();
+			Salvar();
 			return entity;
 		}
 
-		public virtual async Task<TEntity> ObterPorId(int id)
+		public virtual TEntity ObterPorId(int id)
 		{
-			return await DbSet.FindAsync(id);
+			TEntity obj = DbSet.Find(id);
+			return obj;
 		}
 
-		public virtual async Task<List<TEntity>> ObterTodos()
+		public virtual List<TEntity> ObterTodos()
 		{
-			return await DbSet.ToListAsync();
+			List<TEntity> obj = DbSet.ToList();
+			return obj;
 		}
 
-		public async Task<bool> Salvar()
+		public bool Salvar()
 		{
-			return await Db.SaveChangesAsync() > 0;
+			return Db.SaveChanges() > 0;
 		}
 
 		public void Dispose()

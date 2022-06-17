@@ -6,8 +6,10 @@ namespace Locadora.Interface
 {
 	public interface ILocacaoItemService : IService<LocacaoItem>
 	{
-		Task<List<LocacaoItem>> BuscarPorIdLocacao(int id);
-		void InativarItens(int idLocacao);
+		List<LocacaoItem> BuscarPorIdLocacao(int id);
+		bool InativarItens(int idLocacao);
+		List<string> ValidarAtualizacao(LocacaoItem item);
+
 
 	}
 }

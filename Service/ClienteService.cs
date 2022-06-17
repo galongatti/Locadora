@@ -16,36 +16,36 @@ namespace Locadora.Logica
 			_clienteRepository = clienteRepository;
 		}
 
-		public async Task<Cliente> Adicionar(Cliente cliente)
+		public Cliente Adicionar(Cliente cliente)
 		{
-			await _clienteRepository.Adicionar(cliente);
+			 _clienteRepository.Adicionar(cliente);
 			return cliente;
 		}
 
-		public async Task<Cliente> Atualizar(Cliente cliente)
+		public Cliente Atualizar(Cliente cliente)
 		{
-			await _clienteRepository.Atualizar(cliente);
+			 _clienteRepository.Atualizar(cliente);
 			return cliente;
 		}
 
-		public async Task<Cliente> ObterClientePorDocumento(string documento)
+		public Cliente ObterClientePorDocumento(string documento)
 		{
-			return await _clienteRepository.ObterClientePorDocumento(documento);
+			return _clienteRepository.ObterClientePorDocumento(documento);
 		}
 
-		public async Task<Cliente> ObterPorId(int id)
+		public Cliente ObterPorId(int id)
 		{
-			return await _clienteRepository.ObterPorId(id);
+			return  _clienteRepository.ObterPorId(id);
 		}
 
-		public async Task<List<Cliente>> ObterTodos()
+		public List<Cliente> ObterTodos()
 		{
-			return await _clienteRepository.ObterTodos();
+			return _clienteRepository.ObterTodos();
 		}
 
-		public async Task<List<Cliente>> ObterTodosInativos()
+		public List<Cliente> ObterTodosInativos()
 		{
-			return await _clienteRepository.ObterTodosInativos();
+			return  _clienteRepository.ObterTodosInativos();
 		}
 
 		public List<string> ValidarDados(Cliente cliente)

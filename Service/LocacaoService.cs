@@ -10,18 +10,32 @@ namespace Locadora.Service
 	{
 		private readonly ILocacaoRepository _locacoesRepository;
 		private readonly IClienteService _clienteService;
+		private readonly IFilmeService _filmeService;
 
-		public LocacaoService(ILocacaoRepository locacoesRepository, IClienteService clienteService)
+		public LocacaoService(ILocacaoRepository locacoesRepository, IClienteService clienteService, IFilmeService filmeService)
 		{
 			_locacoesRepository = locacoesRepository;
 			_clienteService = clienteService;
+			_filmeService = filmeService;
 		}
 
-		public async Task<Locacao> Adicionar(Locacao locacao)
+		public Locacao Adicionar(Locacao locacao)
 		{
 			locacao.Situacao = Status.ABERTO.ToString();
 			locacao.DataParaDevolucao = locacao.DataAlocacao.AddDays(locacao.DiasAlocacao).Date;
-			await _locacoesRepository.Adicionar(locacao);
+			locacao.Itens.ForEach(x =>
+			{
+				x.DataInclusao = DateTime.Now;
+				x.DataAlteracao = DateTime.Now;
+			});
+
+			_locacoesRepository.Adicionar(locacao);
+
+			locacao.Itens.ForEach(x =>
+			{
+				_filmeService.AlterarDisponibidade(x.IDFilme);
+			});
+
 			return locacao;
 		}
 
@@ -33,7 +47,7 @@ namespace Locadora.Service
 			});
 
 			return lista;
-		}
+		}	
 
 		public Locacao AlimentarObservacao(Locacao x)
 		{
@@ -46,38 +60,57 @@ namespace Locadora.Service
 			return x;
 		}
 
-		public async Task<Locacao> Atualizar(Locacao locacao)
+		public Locacao Atualizar(Locacao locacao)
 		{
 			locacao.Situacao = Status.ABERTO.ToString();
-			await _locacoesRepository.Atualizar(locacao);
+			locacao.DataParaDevolucao = locacao.DataAlocacao.AddDays(locacao.DiasAlocacao).Date;
+			locacao.Itens.ForEach(x =>
+			{
+				x.DataInclusao = DateTime.Now;
+				x.DataAlteracao = DateTime.Now;
+			});
+
+			_locacoesRepository.Atualizar(locacao);
+			locacao.Itens.ForEach(x =>
+			{
+				_filmeService.AlterarDisponibidade(x.IDFilme);
+			});
 			return locacao;
 		}
 
-		public Task<Locacao> DarBaixa(int id)
+		public Locacao DarBaixa(int id)
 		{
-			Locacao locacao = ObterPorId(id).Result;
+			Locacao locacao = ObterPorId(id);
 			locacao.Situacao = Status.CONCLUIDO.ToString();
-			return Atualizar(locacao);
+			_locacoesRepository.Atualizar(locacao);
+			List<LocacaoItem> itens = locacao.Itens;
+			itens.RemoveAll(x => x.Ativo == false);
+			itens.ForEach(x =>
+			{
+				_filmeService.AlterarDisponibidade(x.IDFilme);
+			});
+
+			return locacao;
 		}
 
-		public async Task<List<Locacao>> ObterPorDocumentoCliente(string documento)
+		public List<Locacao> ObterPorDocumentoCliente(string documento)
 		{
-			Cliente cliente = _clienteService.ObterClientePorDocumento(documento).Result;
-			List<Locacao> locacao = await _locacoesRepository.ObterPorIdCliente(cliente.Id);
+			Cliente cliente = _clienteService.ObterClientePorDocumento(documento);
+			List<Locacao> locacao = _locacoesRepository.ObterPorIdCliente(cliente.Id);
 			AlimentarObservacao(locacao);
 			return locacao;
 		}
 
-		public async Task<Locacao> ObterPorId(int id)
+		public Locacao ObterPorId(int id)
 		{
-			Locacao locacao = await _locacoesRepository.ObterPorId(id);
+			Locacao locacao = _locacoesRepository.ObterPorId(id);
 			AlimentarObservacao(locacao);
 			return locacao;
 		}
 
-		public async Task<List<Locacao>> ObterTodos()
+		public List<Locacao> ObterTodos()
 		{
-			List<Locacao> locacoes = await _locacoesRepository.ObterTodos();
+			List<Locacao> locacoes = _locacoesRepository.ObterTodos();
 			AlimentarObservacao(locacoes);
 			List<Locacao> newObjlocacoes = AlimentarObservacao(locacoes);
 
@@ -96,19 +129,16 @@ namespace Locadora.Service
 
 			else
 			{
-				Cliente cliente = _clienteService.ObterPorId(locacao.IDCliente).Result;
+				Cliente cliente = _clienteService.ObterPorId(locacao.IDCliente);
 
 				if (cliente == null)
 					listaErros.Add("O Cliente informado não existe");
-				else
-				{
-					locacao.Cliente = cliente;
-				}
 			}
 
 
 			return listaErros;
 		}
 
+		
 	}
 }

@@ -6,6 +6,6 @@ namespace Locadora.Interface
 {
 	public interface ILocacaoItemRepository : IRepository<LocacaoItem>
 	{
-		Task<List<LocacaoItem>> BuscarPorIdLocacao(int id);
+		List<LocacaoItem> BuscarPorIdLocacao(int id);
 	}
 }

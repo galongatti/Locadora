@@ -6,6 +6,6 @@ namespace Locadora.Interface
 {
 	public interface IFilmeRepository : IRepository<Filme>
 	{
-		Task<List<Filme>> BuscarTodosInativos();
+		List<Filme> BuscarTodosInativos();
 	}
 }

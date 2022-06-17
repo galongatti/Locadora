@@ -12,25 +12,25 @@ namespace Locadora.Repository
 	{
 		public LocacaoRepository(LocadoraApiContext context) : base(context) { }
 
-		public async Task<List<Locacao>> ObterPorIdCliente(int id)
+		public List<Locacao> ObterPorIdCliente(int id)
 		{
-			List<Locacao> locacoes = await Db.Locacoes.Where(x => x.IDCliente == id).Include(x => x.Cliente).Include(x => x.Itens).ToListAsync();
+			List<Locacao> locacoes = Db.Locacoes.Where(x => x.IDCliente == id).Include(x => x.Cliente).Include(x => x.Itens).ToList();
 
 			return locacoes;
 		}
 
-		public override async Task<Locacao> ObterPorId(int id) 
+		public override Locacao ObterPorId(int id) 
 		{
 
-			Locacao locacoes = await Db.Locacoes.Where(x => x.Id == id).Include(x => x.Cliente).Include(x => x.Itens).FirstOrDefaultAsync();
+			Locacao locacoes = Db.Locacoes.Where(x => x.Id == id).Include(x => x.Cliente).Include(x => x.Itens).FirstOrDefault();
 
 			return locacoes;
 
 		}
 
-		public override async Task<List<Locacao>> ObterTodos()
+		public override List<Locacao> ObterTodos()
 		{
-			List<Locacao> locacoes = await Db.Locacoes.Include(x => x.Cliente).Include(x => x.Itens).ToListAsync();
+			List<Locacao> locacoes = Db.Locacoes.Include(x => x.Cliente).Include(x => x.Itens).ToList();
 
 			return locacoes;
 
