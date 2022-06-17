@@ -12,10 +12,12 @@ namespace Locadora.Controller
 	public class LocacoesController : ControllerBase
 	{
 		private readonly ILocacaoService _locacaoService;
+		private readonly ILocacaoItemService _locacaoItemService;
 
-		public LocacoesController(ILocacaoService locacaoService)
+		public LocacoesController(ILocacaoService locacaoService, ILocacaoItemService locacaoItemService)
 		{
 			_locacaoService = locacaoService;
+			_locacaoItemService = locacaoItemService;
 		}
 
 		[HttpPost]
@@ -26,14 +28,37 @@ namespace Locadora.Controller
 				if (!ModelState.IsValid) { return BadRequest("Objeto locação inválido"); }
 
 				List<string> erros = _locacaoService.ValidarDados(locacao);
-
-				if(erros.Count > 0)
+				List<string> errosItens = new List<string>();
+				locacao.Itens.ForEach(x =>
 				{
-					return BadRequest(erros);
+					List<string> erro = _locacaoItemService.ValidarDados(x);
+					if (!string.IsNullOrEmpty(erro[0]))
+						errosItens.AddRange(erro);
+				});
+
+				if(erros.Count > 0 || errosItens.Count > 0)
+				{
+					var objErro =
+					new
+					{
+						ErroPedido = erros,
+						ErroItens = errosItens
+					};
+
+					return BadRequest(objErro);
 				}
 				else
 				{
 					Locacao newLocacao = await _locacaoService.Adicionar(locacao);
+
+					List<LocacaoItem> newItens = new List<LocacaoItem>();
+					locacao.Itens.ForEach(async x =>
+					{
+						LocacaoItem item = await _locacaoItemService.Adicionar(x);
+						newItens.Add(item);
+					});
+
+					newLocacao.Itens = newItens;
 					return Ok(newLocacao);
 				}
 			}
@@ -57,14 +82,39 @@ namespace Locadora.Controller
 					return BadRequest("Locação não localizada");
 
 				List<string> erros = _locacaoService.ValidarDados(locacao);
-
-				if (erros.Count > 0)
+				List<string> errosItens = new List<string>();
+				locacao.Itens.ForEach(x =>
 				{
-					return BadRequest(erros);
+					List<string> erro = _locacaoItemService.ValidarDados(x);
+					if (!string.IsNullOrEmpty(erro[0]))
+						errosItens.AddRange(erro);
+				});
+
+				if (erros.Count > 0 || errosItens.Count > 0)
+				{
+					var objErro =
+					new
+					{
+						ErroPedido = erros,
+						ErroItens = errosItens
+					};
+
+					return BadRequest(objErro);
 				}
 				else
 				{
-					Locacao newLocacao = await _locacaoService.Adicionar(locacao);
+					_locacaoItemService.InativarItens(locacao.Id);
+
+					Locacao newLocacao = await _locacaoService.Atualizar(locacao);
+					List<LocacaoItem> newItens = new List<LocacaoItem>();
+					locacao.Itens.ForEach(async x =>
+					{
+						LocacaoItem item = await _locacaoItemService.Adicionar(x);
+						newItens.Add(item);
+					});
+
+					newLocacao.Itens = newItens;
+
 					return Ok(newLocacao);
 				}
 			}
@@ -109,7 +159,7 @@ namespace Locadora.Controller
 		}
 
 		[HttpGet("BuscarById/{id:int}")]
-		public async Task<ActionResult<Locacao>> BuscarFilmePorId(int id)
+		public async Task<ActionResult<Locacao>> BuscarLocacaoItemPorId(int id)
 		{
 			try
 			{
@@ -118,6 +168,19 @@ namespace Locadora.Controller
 			catch (Exception)
 			{
 
+				return BadRequest("Erro ao buscar a Locação");
+			}
+		}
+
+		[HttpGet("BuscarByDocumento/{id:int}")]
+		public async Task<ActionResult<List<Locacao>>> BuscarByLocacao(string documento)
+		{
+			try
+			{
+				return await _locacaoService.ObterPorDocumentoCliente(documento);
+			}
+			catch (Exception)
+			{
 				return BadRequest("Erro ao buscar a Locação");
 			}
 		}

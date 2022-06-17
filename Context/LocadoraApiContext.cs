@@ -9,7 +9,7 @@ namespace Locadora.Context
         public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Filme> Filme { get; set; }
         public DbSet<Locacao> Locacoes { get; set; }
-        public DbSet<LocacoesItens> LocacoesItens { get; set; }
+        public DbSet<LocacaoItem> LocacoesItens { get; set; }
         public LocadoraApiContext(DbContextOptions<LocadoraApiContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder model)

@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Locadora.Interface
 {
-	public interface IFilmeService : IService<Filme>
+	public interface ILocacaoItemRepository : IRepository<LocacaoItem>
 	{
-		Task<List<Filme>> BuscarTodosInativos();
+		Task<List<LocacaoItem>> BuscarPorIdLocacao(int id);
 	}
 }

@@ -10,7 +10,7 @@ namespace Locadora.ModelConfig
 		{
 			builder.ToTable(nameof(Locacao));
 			builder.HasKey(b => b.Id);
-			builder.HasOne(b => b.Cliente).WithMany(b => b.Locacoes);
+			builder.HasOne(b => b.Cliente).WithMany(b => b.Locacoes).HasForeignKey(x => x.IDCliente);
 			builder.Property(b => b.Situacao).HasColumnType("VARCHAR(20)");
 			builder.Property(b => b.DataAlocacao).HasColumnType("DATETIME");
 			builder.Property(b => b.DataParaDevolucao).HasColumnType("DATETIME");

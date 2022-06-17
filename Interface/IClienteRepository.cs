@@ -7,5 +7,6 @@ namespace Locadora.Interface
 	public interface IClienteRepository : IRepository<Cliente>
 	{
 		public Task<Cliente> ObterClientePorDocumento(string documento);
+		public Task<List<Cliente>> ObterTodosInativos();
 	}
 }

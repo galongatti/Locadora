@@ -91,6 +91,20 @@ namespace Locadora.Controller
 			}
 		}
 
+		[HttpGet("BuscarTodosFilmesInativos")]
+		public async Task<ActionResult<List<Filme>>> BuscarTodosFilmesInativos()
+		{
+			try
+			{
+				return await _filmeService.BuscarTodosInativos();
+			}
+			catch (Exception)
+			{
+
+				return BadRequest("Erro ao buscar Filmes");
+			}
+		}
+
 		[HttpGet("BuscarById/{id:int}")]
 		public async Task<ActionResult<Filme>> BuscarFilmePorId(int id)
 		{

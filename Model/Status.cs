@@ -1,8 +1,9 @@
 ﻿namespace Locadora.Model
 {
-	public enum Situacao
+	public enum Status
 	{
 		ABERTO,
-		FECHADO
+		CONCLUIDO,
+		INATIVO,
 	}
 }

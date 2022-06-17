@@ -1,5 +1,6 @@
 ﻿using Locadora.Interface;
 using Locadora.Model;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,12 +19,35 @@ namespace Locadora.Service
 
 		public async Task<Locacao> Adicionar(Locacao locacao)
 		{
+			locacao.Situacao = Status.ABERTO;
 			await _locacoesRepository.Adicionar(locacao);
 			return locacao;
 		}
 
+		public List<Locacao> AlimentarObservacao(List<Locacao> lista)
+		{
+			lista.ForEach(x =>
+			{
+				AlimentarObservacao(x);
+			});
+
+			return lista;
+		}
+
+		public Locacao AlimentarObservacao(Locacao x)
+		{
+			if (x.Situacao == Status.ABERTO)
+			{
+				if (x.DataParaDevolucao.Date < DateTime.Now.Date)
+					x.ObservacaoSituacao = "LOCAÇÃO EM ATRASO";
+			}
+
+			return x;
+		}
+
 		public async Task<Locacao> Atualizar(Locacao locacao)
 		{
+			locacao.Situacao = Status.ABERTO;
 			await _locacoesRepository.Atualizar(locacao);
 			return locacao;
 		}
@@ -31,23 +55,31 @@ namespace Locadora.Service
 		public Task<Locacao> DarBaixa(int id)
 		{
 			Locacao locacao = ObterPorId(id).Result;
-			locacao.Situacao = Situacao.FECHADO.ToString();
+			locacao.Situacao = Status.CONCLUIDO;
 			return Atualizar(locacao);
 		}
 
 		public async Task<List<Locacao>> ObterPorDocumentoCliente(string documento)
 		{
-			return await _locacoesRepository.ObterPorDocumentoCliente(documento);
+			List<Locacao> locacao = await _locacoesRepository.ObterPorDocumentoCliente(documento);
+			AlimentarObservacao(locacao);
+			return locacao;
 		}
 
 		public async Task<Locacao> ObterPorId(int id)
 		{
-			return await _locacoesRepository.ObterPorId(id);
+			Locacao locacao = await _locacoesRepository.ObterPorId(id);
+			AlimentarObservacao(locacao);
+			return locacao;
 		}
 
 		public async Task<List<Locacao>> ObterTodos()
 		{
-			return await _locacoesRepository.ObterTodos();
+			List<Locacao> locacoes = await _locacoesRepository.ObterTodos();
+			AlimentarObservacao(locacoes);
+			List<Locacao> newObjlocacoes = AlimentarObservacao(locacoes);
+
+			return newObjlocacoes;
 		}
 
 		public List<string> ValidarDados(Locacao locacao)
@@ -55,13 +87,10 @@ namespace Locadora.Service
 			List<string> listaErros = new List<string>();
 
 			if (locacao.DiasAlocacao <= 0)
-				listaErros.Add("O numero de dias para alocação deve ser igual ou superior a 1");
+				listaErros.Add("O numero de dias para locação deve ser igual ou superior a 1");
 
 			if (locacao.IDCliente == default)
 				listaErros.Add("Cliente inválido");
-
-			if (string.IsNullOrEmpty(locacao.Situacao))
-				listaErros.Add("O campo situação deve ser informado");
 
 			else
 			{

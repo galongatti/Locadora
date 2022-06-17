@@ -16,8 +16,10 @@ namespace Locadora.Repository
 		{
 			List<Locacao> locacoes = await (from locacao in Db.Locacoes.AsNoTracking()
 											join cliente in Db.Cliente.AsNoTracking()
-											on locacao.Cliente.Id equals cliente.Id
-											where cliente.Documento == documento
+											on locacao.IDCliente equals cliente.Id
+											join itens in Db.LocacoesItens.AsNoTracking()
+											on locacao.Id equals itens.Id into itensAux
+											where cliente.Documento == documento && locacao.Situacao != Status.INATIVO 
 											select new Locacao
 											{ 
 												Cliente = cliente,
@@ -26,7 +28,8 @@ namespace Locadora.Repository
 												DiasAlocacao = locacao.DiasAlocacao,
 												Id = locacao.Id,
 												IDCliente = cliente.Id,
-												Situacao = locacao.Situacao
+												Situacao = locacao.Situacao,
+												Itens = itensAux.Where(x => x.Ativo == true).ToList()
 											}).ToListAsync();
 
 			return locacoes;
@@ -38,6 +41,8 @@ namespace Locadora.Repository
 			Locacao locacaoObj = await (from locacao in Db.Locacoes.AsNoTracking()
 											join cliente in Db.Cliente.AsNoTracking()
 											on locacao.Cliente.Id equals cliente.Id
+											join itens in Db.LocacoesItens.AsNoTracking()
+											on locacao.Id equals itens.Id into itensAux
 											where locacao.Id == id
 											select new Locacao
 											{
@@ -47,7 +52,8 @@ namespace Locadora.Repository
 												DiasAlocacao = locacao.DiasAlocacao,
 												Id = locacao.Id,
 												IDCliente = cliente.Id,
-												Situacao = locacao.Situacao
+												Situacao = locacao.Situacao,
+												Itens = itensAux.Where(x => x.Ativo == true).ToList()
 											}).FirstOrDefaultAsync();
 
 			return locacaoObj;
@@ -56,22 +62,25 @@ namespace Locadora.Repository
 
 		public override async Task<List<Locacao>> ObterTodos()
 		{
+			List<Locacao> locacoes = await (from locacao in Db.Locacoes.AsNoTracking()
+											join cliente in Db.Cliente.AsNoTracking()
+											on locacao.IDCliente equals cliente.Id
+											join itens in Db.LocacoesItens.AsNoTracking()
+											on locacao.Id equals itens.Id into itensAux
+											where locacao.Situacao != Status.INATIVO
+											select new Locacao
+											{
+												Cliente = cliente,
+												DataAlocacao = locacao.DataAlocacao,
+												DataParaDevolucao = locacao.DataParaDevolucao,
+												DiasAlocacao = locacao.DiasAlocacao,
+												Id = locacao.Id,
+												IDCliente = cliente.Id,
+												Situacao = locacao.Situacao,
+												Itens = itensAux.Where(x => x.Ativo == true).ToList()
+											}).ToListAsync();
 
-			List<Locacao> locacaoObj = await (from locacao in Db.Locacoes.AsNoTracking()
-										join cliente in Db.Cliente.AsNoTracking()
-										on locacao.Cliente.Id equals cliente.Id
-										select new Locacao
-										{
-											Cliente = cliente,
-											DataAlocacao = locacao.DataAlocacao,
-											DataParaDevolucao = locacao.DataParaDevolucao,
-											DiasAlocacao = locacao.DiasAlocacao,
-											Id = locacao.Id,
-											IDCliente = cliente.Id,
-											Situacao = locacao.Situacao
-										}).ToListAsync();
-
-			return locacaoObj;
+			return locacoes;
 
 		}
 	}

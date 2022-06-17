@@ -28,6 +28,11 @@ namespace Locadora.Logica
 			return filme;
 		}
 
+		public async Task<List<Filme>> BuscarTodosInativos()
+		{
+			return await _filmeRepository.BuscarTodosInativos();
+		}
+
 		public async Task<Filme> ObterPorId(int id)
 		{
 			return await _filmeRepository.ObterPorId(id);

@@ -43,6 +43,10 @@ namespace Locadora.Logica
 			return await _clienteRepository.ObterTodos();
 		}
 
+		public async Task<List<Cliente>> ObterTodosInativos()
+		{
+			return await _clienteRepository.ObterTodosInativos();
+		}
 
 		public List<string> ValidarDados(Cliente cliente)
 		{
@@ -52,7 +56,7 @@ namespace Locadora.Logica
 				listaErros.Add("O nome do cliente deve ser preenchido");
 
 			if(string.IsNullOrEmpty(cliente.Documento))
-				listaErros.Add("O nome do cliente documento deve ser preenchido");
+				listaErros.Add("O documento deve ser preenchido");
 
 			return listaErros;
 		}
