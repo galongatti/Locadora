@@ -18,6 +18,7 @@ namespace Locadora.Service
 
 		public async Task<LocacaoItem> Adicionar(LocacaoItem item)
 		{
+			item.Ativo = true;
 			return await _locacaoItemRepository.Adicionar(item);
 		}
 
@@ -56,7 +57,7 @@ namespace Locadora.Service
 
 		public List<string> ValidarDados(LocacaoItem item)
 		{
-			Filme filme = _filmeService.ObterPorId(item.Id).Result;
+			Filme filme = _filmeService.ObterPorId(item.IDFilme).Result;
 
 			if (filme.Disponivel)
 				return new List<string>() { string.Empty };

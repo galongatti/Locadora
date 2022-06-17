@@ -6,6 +6,6 @@ namespace Locadora.Interface
 {
 	public interface ILocacaoRepository : IRepository<Locacao>
 	{
-		Task<List<Locacao>> ObterPorDocumentoCliente(string documento);
+		Task<List<Locacao>> ObterPorIdCliente(int cliente);
 	}
 }

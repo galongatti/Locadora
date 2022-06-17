@@ -49,22 +49,15 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Locacao newLocacao = await _locacaoService.Adicionar(locacao);
+					await _locacaoService.Adicionar(locacao);
 
-					List<LocacaoItem> newItens = new List<LocacaoItem>();
-					locacao.Itens.ForEach(async x =>
-					{
-						LocacaoItem item = await _locacaoItemService.Adicionar(x);
-						newItens.Add(item);
-					});
-
-					newLocacao.Itens = newItens;
-					return Ok(newLocacao);
+				
+					return Ok(locacao);
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return BadRequest("Erro ao cadastrar filme");
+				return BadRequest("Erro ao cadastrar Locação");
 			}
 
 		}
@@ -107,9 +100,9 @@ namespace Locadora.Controller
 
 					Locacao newLocacao = await _locacaoService.Atualizar(locacao);
 					List<LocacaoItem> newItens = new List<LocacaoItem>();
-					locacao.Itens.ForEach(async x =>
+					locacao.Itens.ForEach(x =>
 					{
-						LocacaoItem item = await _locacaoItemService.Adicionar(x);
+						LocacaoItem item = _locacaoItemService.Adicionar(x).Result;
 						newItens.Add(item);
 					});
 
@@ -118,7 +111,7 @@ namespace Locadora.Controller
 					return Ok(newLocacao);
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				return BadRequest("Erro ao atualizar locação");
 			}
@@ -151,7 +144,7 @@ namespace Locadora.Controller
 			{
 				return await _locacaoService.ObterTodos();
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 
 				return BadRequest("Erro ao buscar as Locações");

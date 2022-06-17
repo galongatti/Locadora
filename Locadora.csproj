@@ -22,4 +22,8 @@
     <None Include="Locadora.sln" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Locadora
@@ -36,22 +39,35 @@ namespace Locadora
 				opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 			});
 
-			services.AddControllers();
+			
+
+			services.AddControllers(options =>
+			{
+				options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
+				options.OutputFormatters.Add(new SystemTextJsonOutputFormatter(new JsonSerializerOptions(JsonSerializerDefaults.Web)
+				{
+					ReferenceHandler = ReferenceHandler.Preserve,
+				}));
+			});
+
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Locadora", Version = "v1" });
 			});
 
-			services.AddScoped<LocadoraApiContext>();
+			services.AddTransient<LocadoraApiContext>();
 
-			services.AddScoped<IClienteRepository, ClienteRepository>();
-			services.AddScoped<IClienteService, ClienteService>();
+			services.AddTransient<IClienteRepository, ClienteRepository>();
+			services.AddTransient<IClienteService, ClienteService>();
 
-			services.AddScoped<IFilmeRepository, FilmeRepository>();
-			services.AddScoped<IFilmeService, FilmeService>();
+			services.AddTransient<IFilmeRepository, FilmeRepository>();
+			services.AddTransient<IFilmeService, FilmeService>();
 
-			services.AddScoped<ILocacaoRepository, LocacaoRepository>();
-			services.AddScoped<ILocacaoService, LocacaoService>();
+			services.AddTransient<ILocacaoRepository, LocacaoRepository>();
+			services.AddTransient<ILocacaoService, LocacaoService>();
+
+			services.AddTransient<ILocacaoItemRepository, LocacaoItemRepository>();
+			services.AddTransient<ILocacaoItemService, LocacaoItemService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

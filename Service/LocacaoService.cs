@@ -19,7 +19,8 @@ namespace Locadora.Service
 
 		public async Task<Locacao> Adicionar(Locacao locacao)
 		{
-			locacao.Situacao = Status.ABERTO;
+			locacao.Situacao = Status.ABERTO.ToString();
+			locacao.DataParaDevolucao = locacao.DataAlocacao.AddDays(locacao.DiasAlocacao).Date;
 			await _locacoesRepository.Adicionar(locacao);
 			return locacao;
 		}
@@ -36,7 +37,7 @@ namespace Locadora.Service
 
 		public Locacao AlimentarObservacao(Locacao x)
 		{
-			if (x.Situacao == Status.ABERTO)
+			if (x.Situacao == Status.ABERTO.ToString())
 			{
 				if (x.DataParaDevolucao.Date < DateTime.Now.Date)
 					x.ObservacaoSituacao = "LOCAÇÃO EM ATRASO";
@@ -47,7 +48,7 @@ namespace Locadora.Service
 
 		public async Task<Locacao> Atualizar(Locacao locacao)
 		{
-			locacao.Situacao = Status.ABERTO;
+			locacao.Situacao = Status.ABERTO.ToString();
 			await _locacoesRepository.Atualizar(locacao);
 			return locacao;
 		}
@@ -55,13 +56,14 @@ namespace Locadora.Service
 		public Task<Locacao> DarBaixa(int id)
 		{
 			Locacao locacao = ObterPorId(id).Result;
-			locacao.Situacao = Status.CONCLUIDO;
+			locacao.Situacao = Status.CONCLUIDO.ToString();
 			return Atualizar(locacao);
 		}
 
 		public async Task<List<Locacao>> ObterPorDocumentoCliente(string documento)
 		{
-			List<Locacao> locacao = await _locacoesRepository.ObterPorDocumentoCliente(documento);
+			Cliente cliente = _clienteService.ObterClientePorDocumento(documento).Result;
+			List<Locacao> locacao = await _locacoesRepository.ObterPorIdCliente(cliente.Id);
 			AlimentarObservacao(locacao);
 			return locacao;
 		}

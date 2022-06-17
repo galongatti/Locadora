@@ -43,68 +43,71 @@ namespace Locadora.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ClienteId = table.Column<int>(type: "int", nullable: true),
-                    Situacao = table.Column<string>(type: "VARCHAR(20)", nullable: true),
+                    IDCliente = table.Column<int>(type: "int", nullable: false),
+                    Situacao = table.Column<string>(type: "VARCHAR(20)", nullable: false),
                     DataAlocacao = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    DataDevolucao = table.Column<DateTime>(type: "DATETIME", nullable: false)
+                    DataParaDevolucao = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    DiasAlocacao = table.Column<int>(type: "INT", nullable: false),
+                    ObservacaoSituacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Locacao", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Locacao_Cliente_ClienteId",
-                        column: x => x.ClienteId,
+                        name: "FK_Locacao_Cliente_IDCliente",
+                        column: x => x.IDCliente,
                         principalTable: "Cliente",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocacoesItens",
+                name: "LocacaoItem",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FilmeId = table.Column<int>(type: "int", nullable: true),
-                    LocacaoId = table.Column<int>(type: "int", nullable: true)
+                    IDFilme = table.Column<int>(type: "int", nullable: false),
+                    IDLocacao = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocacoesItens", x => x.Id);
+                    table.PrimaryKey("PK_LocacaoItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LocacoesItens_Filme_FilmeId",
-                        column: x => x.FilmeId,
+                        name: "FK_LocacaoItem_Filme_IDFilme",
+                        column: x => x.IDFilme,
                         principalTable: "Filme",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LocacoesItens_Locacao_LocacaoId",
-                        column: x => x.LocacaoId,
+                        name: "FK_LocacaoItem_Locacao_IDLocacao",
+                        column: x => x.IDLocacao,
                         principalTable: "Locacao",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Locacao_ClienteId",
+                name: "IX_Locacao_IDCliente",
                 table: "Locacao",
-                column: "ClienteId");
+                column: "IDCliente");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocacoesItens_FilmeId",
-                table: "LocacoesItens",
-                column: "FilmeId");
+                name: "IX_LocacaoItem_IDFilme",
+                table: "LocacaoItem",
+                column: "IDFilme");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocacoesItens_LocacaoId",
-                table: "LocacoesItens",
-                column: "LocacaoId");
+                name: "IX_LocacaoItem_IDLocacao",
+                table: "LocacaoItem",
+                column: "IDLocacao");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LocacoesItens");
+                name: "LocacaoItem");
 
             migrationBuilder.DropTable(
                 name: "Filme");

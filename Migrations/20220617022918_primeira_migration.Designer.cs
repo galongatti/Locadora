@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Locadora.Migrations
 {
     [DbContext(typeof(LocadoraApiContext))]
-    [Migration("20220616161517_terceira_migration")]
-    partial class terceira_migration
+    [Migration("20220617022918_primeira_migration")]
+    partial class primeira_migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,9 +70,6 @@ namespace Locadora.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ClienteId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DataAlocacao")
                         .HasColumnType("DATETIME");
 
@@ -82,56 +79,72 @@ namespace Locadora.Migrations
                     b.Property<int>("DiasAlocacao")
                         .HasColumnType("INT");
 
+                    b.Property<int>("IDCliente")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ObservacaoSituacao")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Situacao")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("IDCliente");
 
                     b.ToTable("Locacao");
                 });
 
-            modelBuilder.Entity("Locadora.Model.LocacoesItens", b =>
+            modelBuilder.Entity("Locadora.Model.LocacaoItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("FilmeId")
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IDFilme")
                         .HasColumnType("int");
 
-                    b.Property<int?>("LocacaoId")
+                    b.Property<int>("IDLocacao")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FilmeId");
+                    b.HasIndex("IDFilme");
 
-                    b.HasIndex("LocacaoId");
+                    b.HasIndex("IDLocacao");
 
-                    b.ToTable("LocacoesItens");
+                    b.ToTable("LocacaoItem");
                 });
 
             modelBuilder.Entity("Locadora.Model.Locacao", b =>
                 {
                     b.HasOne("Locadora.Model.Cliente", "Cliente")
                         .WithMany("Locacoes")
-                        .HasForeignKey("ClienteId");
+                        .HasForeignKey("IDCliente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("Locadora.Model.LocacoesItens", b =>
+            modelBuilder.Entity("Locadora.Model.LocacaoItem", b =>
                 {
                     b.HasOne("Locadora.Model.Filme", "Filme")
                         .WithMany("LocacoesItens")
-                        .HasForeignKey("FilmeId");
+                        .HasForeignKey("IDFilme")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Locadora.Model.Locacao", "Locacao")
                         .WithMany("Itens")
-                        .HasForeignKey("LocacaoId");
+                        .HasForeignKey("IDLocacao")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Filme");
 

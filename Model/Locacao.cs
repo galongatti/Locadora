@@ -7,7 +7,7 @@ namespace Locadora.Model
 	{
 		public int IDCliente { get; set; }
 		public Cliente Cliente { get; set; }
-		public Status Situacao { get; set; }
+		public string Situacao { get; set; }
 		public DateTime DataAlocacao { get; set; }
 		public DateTime DataParaDevolucao { get; set; }
 		public int DiasAlocacao { get; set; }
