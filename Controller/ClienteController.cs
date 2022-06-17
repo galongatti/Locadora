@@ -31,6 +31,7 @@ namespace Locadora.Controller
 				
 
 				Cliente clienteExistente = await _clienteService.ObterClientePorDocumento(cliente.Documento);
+
 				if (clienteExistente != null) 
 				{
 					erros.Add("Já existe um cliente com esse documento");
@@ -63,9 +64,10 @@ namespace Locadora.Controller
 
 
 				Cliente clienteExistente = await _clienteService.ObterClientePorDocumento(cliente.Documento);
+
 				if (clienteExistente == null)
 				{
-					erros.Add("Já existe um cliente com esse documento");
+					erros.Add("Não existe um cliente com esse documento");
 				}
 
 				if (erros.Count > 0)
@@ -74,7 +76,7 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Cliente newCliente = await _clienteService.Adicionar(cliente);
+					Cliente newCliente = await _clienteService.Atualizar(cliente);
 					return Ok(newCliente);
 				}
 			}
@@ -89,12 +91,23 @@ namespace Locadora.Controller
 		{
 			try
 			{
-				
 				return await _clienteService.ObterTodos();
 			}
 			catch (Exception)
 			{
+				return BadRequest("Erro ao buscar clientes");
+			}
+		}
 
+		[HttpGet("BuscarTodosClientesInativos")]
+		public async Task<ActionResult<List<Cliente>>> BuscarTodosClientesInativos()
+		{
+			try
+			{
+				return await _clienteService.ObterTodosInativos();
+			}
+			catch (Exception)
+			{
 				return BadRequest("Erro ao buscar clientes");
 			}
 		}

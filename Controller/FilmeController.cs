@@ -3,6 +3,7 @@ using Locadora.Interface;
 using Locadora.Logica;
 using Locadora.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -60,12 +61,6 @@ namespace Locadora.Controller
 				}
 				else
 				{
-					Filme FilmeExiste = await _filmeService.ObterPorId(filme.Id);
-
-					if(FilmeExiste == null)
-						return BadRequest("Filme não localizado");
-					
-
 					Filme newFilme = await _filmeService.Atualizar(filme);
 					return Ok(newFilme);
 
@@ -83,6 +78,20 @@ namespace Locadora.Controller
 			try
 			{
 				return await _filmeService.ObterTodos();
+			}
+			catch (Exception)
+			{
+
+				return BadRequest("Erro ao buscar Filmes");
+			}
+		}
+
+		[HttpGet("BuscarTodosFilmesInativos")]
+		public async Task<ActionResult<List<Filme>>> BuscarTodosFilmesInativos()
+		{
+			try
+			{
+				return await _filmeService.BuscarTodosInativos();
 			}
 			catch (Exception)
 			{

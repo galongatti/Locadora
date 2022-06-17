@@ -11,8 +11,8 @@ namespace Locadora.Model
 		public DateTime DataAlocacao { get; set; }
 		public DateTime DataParaDevolucao { get; set; }
 		public int DiasAlocacao { get; set; }
-		public List<LocacoesItens> Itens { get; set; }
-		public string ObservacaoSituacao {get;set;}
+		public List<LocacaoItem> Itens { get; set; }
+		public string ObservacaoSituacao {get;set; }
 		
 	}
 }

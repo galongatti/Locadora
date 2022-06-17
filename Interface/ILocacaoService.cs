@@ -8,5 +8,7 @@ namespace Locadora.Interface
 	{
 		Task<List<Locacao>> ObterPorDocumentoCliente(string documento);
 		Task<Locacao> DarBaixa(int id);
+		List<Locacao> AlimentarObservacao(List<Locacao> lista);
+		Locacao AlimentarObservacao(Locacao lista);
 	}
 }

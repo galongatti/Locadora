@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Locadora.ModelConfig
 {
-	public class LocacaoItensConfiguration : IEntityTypeConfiguration<LocacoesItens>
+	public class LocacaoItensConfiguration : IEntityTypeConfiguration<LocacaoItem>
 	{
-		public void Configure(EntityTypeBuilder<LocacoesItens> builder)
+		public void Configure(EntityTypeBuilder<LocacaoItem> builder)
 		{
-			builder.ToTable(nameof(LocacoesItens));
+			builder.ToTable(nameof(LocacaoItem));
 			builder.HasKey(b => b.Id);
-			builder.HasOne(b => b.Locacao).WithMany(b => b.Itens);
-			builder.HasOne(b => b.Filme).WithMany(b => b.LocacoesItens);
+			builder.HasOne(b => b.Locacao).WithMany(b => b.Itens).HasForeignKey(b => b.IDLocacao);
+			builder.HasOne(b => b.Filme).WithMany(b => b.LocacoesItens).HasForeignKey(b => b.IDFilme);
 		}
 	}
 }
